@@ -57,7 +57,7 @@ Export as **CSV** or **JSON** for spreadsheet analysis.
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/tv-trade.git
+   git clone https://github.com/ik123a/tv-trade.git
    ```
 
 2. Open Chrome and go to `chrome://extensions/`
@@ -111,22 +111,26 @@ Export as **CSV** or **JSON** for spreadsheet analysis.
 ## 📁 Project Structure
 
 ```
-TV trade/
-├── manifest.json          # Chrome extension manifest (MV3)
-├── background.js          # Service worker: AI API calls, message routing
-├── content.js             # TradingView injector: scraping, auto-trading engine
-├── dashboard.html         # Full dashboard UI
-├── dashboard.js           # Dashboard rendering & controls
-├── dashboard.css          # Dashboard styling (dark theme)
-├── dashboard-data.js      # Skills, teams, engines catalog data
-├── popup.html             # Browser action popup
-├── popup.js               # Popup controls
-├── styles.css             # Legacy overlay styles
-├── icon.png               # Extension icon
-├── OPENROUTER_API_KEY.txt # OpenRouter API key (user-provided)
-├── NVIDIA_API_KEY.txt     # NVIDIA NIM API key (user-provided)
-├── .gitignore             # Git ignore rules
-└── README.md              # This file
+tv-trade/
+├── manifest.json              # Chrome extension manifest (Manifest V3)
+├── background.js              # Service worker: AI API calls, message routing
+├── content.js                 # TradingView injector: scraping, auto-trading engine
+├── dashboard.html             # Full dashboard UI (10 tabs)
+├── dashboard.js               # Dashboard rendering & controls
+├── dashboard.css              # Dashboard styling (dark theme, glassmorphism)
+├── dashboard-data.js          # Skills, teams, engines catalog data
+├── popup.html                 # Browser action popup
+├── popup.js                   # Popup controls
+├── styles.css                 # Legacy overlay styles
+├── icon.png                   # Extension icon
+├── ARCHITECTURE.md            # System architecture diagrams
+├── CONTRIBUTING.md            # Developer setup & contribution guide
+├── CHANGELOG.md               # Version history
+├── LICENSE                    # MIT License
+├── .gitignore                 # Git ignore rules (excludes API keys)
+├── OPENROUTER_API_KEY.txt.example  # API key placeholder
+├── NVIDIA_API_KEY.txt.example      # API key placeholder
+└── README.md                  # This file
 ```
 
 ---
@@ -163,6 +167,26 @@ TV trade/
 7. Everything logged
    └── Activity feed, trade log table, portfolio summary
 ```
+
+---
+
+## 📐 Architecture
+
+For detailed system architecture with Mermaid diagrams, see [ARCHITECTURE.md](ARCHITECTURE.md).
+
+Covers: component breakdown, message flow, auto-trade execution flow, DOM automation sequence, state management, and file dependency graph.
+
+---
+
+## 🤝 Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, branch strategy, and guidelines.
+
+---
+
+## 📋 Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for version history.
 
 ---
 
