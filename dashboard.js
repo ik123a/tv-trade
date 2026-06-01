@@ -629,8 +629,13 @@ function initSettings() {
       models = [
         { v: 'nvidia/llama-3.3-nemotron-super-49b-v1.5', l: '⚡ Nemotron Super 49B v1.5 (Primary)' },
         { v: 'auto', l: '⚡ Auto (Priority Swarm)' },
-        { v: 'meta/llama-3.3-70b-instruct', l: '🚀 Llama 3.3 70B' },
+        { v: 'deepseek-ai/deepseek-v4-pro', l: '🧠 DeepSeek V4 Pro' },
+        { v: 'meta/llama-4-maverick-17b-128e-instruct', l: '🦙 Llama 4 Maverick 17B' },
+        { v: 'z-ai/glm-5.1', l: '💎 GLM 5.1' },
+        { v: 'qwen/qwen3-coder-480b-a35b-instruct', l: '🧪 Qwen3 Coder 480B' },
+        { v: 'mistralai/mistral-large-3-675b-instruct-2512', l: '🌊 Mistral Large 3 675B' },
         { v: 'nvidia/nemotron-3-super-120b-a12b', l: '🦾 Nemotron 3 Super 120B' },
+        { v: 'meta/llama-3.3-70b-instruct', l: '🚀 Llama 3.3 70B' },
         { v: 'moonshotai/kimi-k2.6', l: '🌙 Kimi K2.6 (Moonshot)' }
       ];
       defaultModel = 'nvidia/llama-3.3-nemotron-super-49b-v1.5';

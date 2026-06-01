@@ -315,8 +315,13 @@ Previous Signal Feedback: ${JSON.stringify(data.feedback || [])}`;
     if (isNvidia) {
       const NVIDIA_MODEL_PRIORITY = [
         "nvidia/llama-3.3-nemotron-super-49b-v1.5",
-        "meta/llama-3.3-70b-instruct",
+        "deepseek-ai/deepseek-v4-pro",
+        "meta/llama-4-maverick-17b-128e-instruct",
+        "z-ai/glm-5.1",
+        "qwen/qwen3-coder-480b-a35b-instruct",
+        "mistralai/mistral-large-3-675b-instruct-2512",
         "nvidia/nemotron-3-super-120b-a12b",
+        "meta/llama-3.3-70b-instruct",
         "moonshotai/kimi-k2.6"
       ];
       modelsToTry = userModel === "auto" ? NVIDIA_MODEL_PRIORITY : [userModel];
