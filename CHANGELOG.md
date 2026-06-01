@@ -2,13 +2,31 @@
 
 All notable changes to TV Trade are documented here.
 
+## [1.1.0] — 2025-06-01
+
+### 🧠 New AI Models
+
+- Added **5 new NVIDIA NIM models**: DeepSeek V4 Pro, Llama 4 Maverick 17B, GLM 5.1, Qwen3 Coder 480B, Mistral Large 3 675B
+- Total model count: **16** (9 NVIDIA NIM + 7 OpenRouter)
+- Updated Auto fallback priority chain to include all 9 NVIDIA models
+
+### 📐 Documentation
+
+- Added `ARCHITECTURE.md` — 8 Mermaid diagrams covering full system architecture
+- Added `CONTRIBUTING.md` — developer setup and contribution guide
+- Added `CHANGELOG.md` — version history
+- Added `LICENSE` — MIT License
+- Complete `README.md` rewrite with architecture overview, all 16 models, and full project docs
+
+---
+
 ## [1.0.0] — 2025-06-01
 
 ### 🚀 Initial Release
 
 #### AI Signal Engine
 - Multi-model AI prediction with NVIDIA NIM and OpenRouter support
-- 6+ AI models with automatic fallback on failure
+- 16 AI models with automatic fallback on failure (9 NVIDIA + 7 OpenRouter)
 - Structured financial analysis prompts with OHLC, news, technicals
 - BUY/SELL/HOLD signals with confidence %, Take Profit & Stop Loss
 

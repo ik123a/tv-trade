@@ -89,7 +89,7 @@ graph LR
 | `scrapeTechnicals()` | Reads speedometer gauge (Buy/Sell/Neutral) |
 | `accumulateCandle()` | Builds rolling 500-candle price history |
 | `triggerPrediction()` | Packages data → sends to background.js for AI |
-| `shouldAutoExecute()` | 5-point gate check before auto-trading |
+| `shouldAutoExecute()` | 7-point gate check before auto-trading |
 | `executeOrder()` | Routes to DOM or simulated execution |
 | `autoFillOrderPanel()` | DOM automation: click tabs, fill inputs, submit |
 | `simulateOrder()` | Internal paper trade recording |
@@ -385,15 +385,45 @@ graph TD
 
 ---
 
+## AI Model Inventory (16 Models)
+
+### NVIDIA NIM (9 models)
+| Priority | Model ID | Parameters |
+|----------|----------|------------|
+| 1 | `nvidia/llama-3.3-nemotron-super-49b-v1.5` | 49B |
+| 2 | `deepseek-ai/deepseek-v4-pro` | — |
+| 3 | `meta/llama-4-maverick-17b-128e-instruct` | 17B (128 experts) |
+| 4 | `z-ai/glm-5.1` | — |
+| 5 | `qwen/qwen3-coder-480b-a35b-instruct` | 480B (35B active) |
+| 6 | `mistralai/mistral-large-3-675b-instruct-2512` | 675B |
+| 7 | `nvidia/nemotron-3-super-120b-a12b` | 120B (12B active) |
+| 8 | `meta/llama-3.3-70b-instruct` | 70B |
+| 9 | `moonshotai/kimi-k2.6` | — |
+
+### OpenRouter (7 models)
+| Priority | Model ID | Cost |
+|----------|----------|------|
+| 1 | `moonshotai/kimi-k2.6:free` | Free |
+| 2 | `deepseek/deepseek-v4-flash` | Free |
+| 3 | `qwen/qwen3-coder:free` | Free |
+| 4 | `nvidia/nemotron-3-super-120b-a12b:free` | Free |
+| 5 | `minimax/minimax-m2.5:free` | Free |
+| 6 | `z-ai/glm-4.5-air:free` | Free |
+
+When **Auto** is selected, models are tried in priority order. If one fails (error, timeout, rate limit), the next model in the chain is attempted automatically.
+
+---
+
 ## Technology Stack
 
 | Layer | Technology |
 |-------|-----------|
 | Platform | Chrome Extension (Manifest V3) |
 | Language | Vanilla JavaScript (ES2022) |
-| Styling | Vanilla CSS (dark theme, glassmorphism) |
-| Storage | `chrome.storage.local` |
-| Messaging | `chrome.runtime.sendMessage` / `onMessage` |
-| AI Models | NVIDIA NIM API, OpenRouter API |
+| Styling | Vanilla CSS (950+ lines, dark theme, glassmorphism) |
+| Storage | `chrome.storage.local` (10 state keys) |
+| Messaging | `chrome.runtime.sendMessage` / `onMessage` (20+ types) |
+| AI Models | NVIDIA NIM API (9 models), OpenRouter API (7 models) |
 | DOM Interaction | `querySelector`, native input setters, `MouseEvent` dispatch |
 | Charts | HTML5 Canvas (equity curve) |
+| Export | CSV, JSON, Pine Script v5, MQL5, TDX |
