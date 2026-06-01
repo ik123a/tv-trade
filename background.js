@@ -4,6 +4,85 @@ let lastRequestTime = 0;
 const MIN_REQUEST_INTERVAL = 10000;
 let dashboardTabId = null;
 
+// ══════════════════════════════════════════════════════════
+// AUTO-CONFIGURATION: Runs on install, update, and browser restart
+// ══════════════════════════════════════════════════════════
+chrome.runtime.onInstalled.addListener(async (details) => {
+  console.log(`TV Trade: ${details.reason} (v${chrome.runtime.getManifest().version})`);
+
+  // Set default settings if not already configured
+  const defaults = {
+    aiEnabled: true,
+    selectedModel: null,          // Will be set after key detection
+    selectedPreset: 'technical_analysis_panel',
+    autoTradeEnabled: false,
+    minAutoConfidence: 65,
+    tradeSettings: { tradeMode: 'dom', positionSize: 1000, maxOpenPositions: 3, riskPerTrade: 2 },
+    openTrades: [],
+    feedbackData: [],
+    activityLog: []
+  };
+
+  const existing = await chrome.storage.local.get(Object.keys(defaults));
+
+  // Only set values that don't already exist (preserve user settings on update)
+  const toSet = {};
+  for (const [key, val] of Object.entries(defaults)) {
+    if (existing[key] === undefined || existing[key] === null) {
+      toSet[key] = val;
+    }
+  }
+
+  // Auto-detect and load API key
+  if (!existing.apiKey) {
+    let foundKey = null;
+    // Try NVIDIA key first (user preference)
+    try {
+      const res = await fetch(chrome.runtime.getURL('NVIDIA_API_KEY.txt'));
+      const text = await res.text();
+      const key = text.trim();
+      if (key.startsWith('nvapi-') && key.length > 20 && !key.includes('YOUR')) {
+        foundKey = key;
+      }
+    } catch (e) {}
+    // Fallback to OpenRouter key
+    if (!foundKey) {
+      try {
+        const res = await fetch(chrome.runtime.getURL('OPENROUTER_API_KEY.txt'));
+        const text = await res.text();
+        const key = text.trim();
+        if ((key.startsWith('sk-or-') || key.startsWith('sk-')) && key.length > 20 && !key.includes('YOUR') && !key.includes('PASTE')) {
+          foundKey = key;
+        }
+      } catch (e) {}
+    }
+    if (foundKey) {
+      toSet.apiKey = foundKey;
+      // Set appropriate default model based on key type
+      if (foundKey.startsWith('nvapi-')) {
+        toSet.selectedModel = 'nvidia/llama-3.3-nemotron-super-49b-v1.5';
+      } else {
+        toSet.selectedModel = 'moonshotai/kimi-k2.6:free';
+      }
+    }
+  } else if (!existing.selectedModel) {
+    // Key exists but no model selected
+    toSet.selectedModel = existing.apiKey.startsWith('nvapi-')
+      ? 'nvidia/llama-3.3-nemotron-super-49b-v1.5'
+      : 'moonshotai/kimi-k2.6:free';
+  }
+
+  if (Object.keys(toSet).length > 0) {
+    await chrome.storage.local.set(toSet);
+    console.log('TV Trade: Auto-configured settings:', Object.keys(toSet));
+  }
+});
+
+// Keep service worker alive on startup
+chrome.runtime.onStartup.addListener(() => {
+  console.log('TV Trade: Service worker started');
+});
+
 async function ensureDashboardOpen() {
   if (dashboardTabId) {
     try {
