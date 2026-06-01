@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TV trade — AI Swarm Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-left">
+      <div class="logo">📺 TV trade</div>
+      <div class="stat-pills">
+        <span class="pill"><strong id="stat-skills">71</strong> Skills</span>
+        <span class="pill"><strong id="stat-teams">29</strong> Teams</span>
+        <span class="pill"><strong id="stat-engines">7</strong> Backtest Engines</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="connection-badge">
+        <span class="connection-dot" id="chart-connection-dot"></span>
+        <span id="chart-connection-text">Waiting for TradingView…</span>
+      </div>
+      <a class="chart-link" href="https://www.tradingview.com/chart/" target="_blank" rel="noopener">Open TradingView ↗</a>
+    </div>
+  </header>
+
+  <!-- PORTFOLIO SUMMARY BAR -->
+  <section class="portfolio-bar">
+    <div class="portfolio-item">
+      <span class="portfolio-label">📡 Symbol</span>
+      <span class="portfolio-value" id="dashboard-symbol">—</span>
+    </div>
+    <div class="portfolio-item">
+      <span class="portfolio-label">💰 Price</span>
+      <span class="portfolio-value" id="dashboard-price">—</span>
+    </div>
+    <div class="portfolio-item">
+      <span class="portfolio-label">📊 Open Positions</span>
+      <span class="portfolio-value" id="port-open-count">0</span>
+    </div>
+    <div class="portfolio-item">
+      <span class="portfolio-label">📈 Unrealized P&L</span>
+      <span class="portfolio-value" id="port-unrealized-pnl">$0.00</span>
+    </div>
+    <div class="portfolio-item">
+      <span class="portfolio-label">✅ Realized P&L</span>
+      <span class="portfolio-value" id="port-realized-pnl">$0.00</span>
+    </div>
+    <div class="portfolio-item accent-item">
+      <span class="portfolio-label">💎 Total P&L</span>
+      <span class="portfolio-value" id="port-total-pnl">$0.00</span>
+    </div>
+    <div class="portfolio-item">
+      <span class="portfolio-label">🏆 Win Rate</span>
+      <span class="portfolio-value" id="port-win-rate">0%</span>
+    </div>
+    <div class="portfolio-item">
+      <span class="portfolio-label">W / L</span>
+      <span class="portfolio-value" id="port-wl">0 / 0</span>
+    </div>
+  </section>
+
+  <div class="site-layout">
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <h3>AI Engine</h3>
+        <select id="model-select" class="site-select"></select>
+      </div>
+      <div class="sidebar-section">
+        <h3>Swarm Team Preset</h3>
+        <select id="preset-select" class="site-select"></select>
+        <p class="sidebar-hint">Active: <span id="tv-ai-active-preset">technical_analysis_panel</span></p>
+      </div>
+      <div class="sidebar-section">
+        <h3>🤖 Auto Trading</h3>
+        <label class="toggle-row">
+          <span>Enable AUTO</span>
+          <input type="checkbox" id="auto-trade-toggle">
+        </label>
+        <label class="range-row">
+          Min confidence: <span id="confidence-val">65</span>%
+          <input type="range" id="min-confidence" min="50" max="90" value="65">
+        </label>
+      </div>
+      <div class="sidebar-section">
+        <h3>⚙️ Trade Settings</h3>
+        <label class="settings-row">
+          <span>Execution Mode</span>
+          <select id="trade-mode-select" class="site-select small-select">
+            <option value="dom" selected>DOM Only (TradingView)</option>
+            <option value="both">DOM + Sim Fallback</option>
+            <option value="simulated">Simulated Only</option>
+          </select>
+        </label>
+        <label class="settings-row">
+          <span>Position Size $</span>
+          <input type="number" id="position-size" class="settings-input" value="1000" min="1" step="100">
+        </label>
+        <label class="settings-row">
+          <span>Max Positions</span>
+          <input type="number" id="max-positions" class="settings-input" value="3" min="1" max="20" step="1">
+        </label>
+      </div>
+      <div class="sidebar-section engines-mini" id="engines-sidebar"></div>
+    </aside>
+
+    <main class="main-content">
+      <nav class="vibe-tabs">
+        <div class="vibe-tab active" data-tab="signal">Signal</div>
+        <div class="vibe-tab" data-tab="positions">Positions</div>
+        <div class="vibe-tab" data-tab="activity">Activity Log</div>
+        <div class="vibe-tab" data-tab="tradelog">Trade Log</div>
+        <div class="vibe-tab" data-tab="swarm">Swarm</div>
+        <div class="vibe-tab" data-tab="teams">29 Teams</div>
+        <div class="vibe-tab" data-tab="skills">71 Skills</div>
+        <div class="vibe-tab" data-tab="history">History</div>
+        <div class="vibe-tab" data-tab="backtest">Backtest</div>
+        <div class="vibe-tab" data-tab="export">Export</div>
+      </nav>
+
+      <!-- SIGNAL TAB -->
+      <div id="vibe-view-signal" class="vibe-view">
+        <div class="signal-row">
+          <div class="signal-panel">
+            <div class="signal-header">
+              <div class="signal-status">
+                <span class="status-dot" id="tv-ai-status-dot"></span>
+                <span id="tv-ai-status-text">SWARM INITIALIZING</span>
+              </div>
+              <div class="signal-actions">
+                <div id="tv-ai-autotrade-btn">AUTO: OFF</div>
+                <button id="tv-ai-reload" class="icon-btn" title="Refresh">↻</button>
+              </div>
+            </div>
+            <div class="main-signal-box">
+              <div id="tv-ai-signal-display">--</div>
+              <div class="conf-label">CONFIDENCE</div>
+              <div class="prob-bar-container"><div id="tv-ai-prob-bar"></div></div>
+              <div id="tv-ai-prob" class="prob-value">--%</div>
+            </div>
+            <div id="tv-ai-tpsl-section" class="vibe-grid">
+              <div class="vibe-card"><div class="vibe-label">Take Profit</div><div class="vibe-value" id="tv-ai-tp">--</div></div>
+              <div class="vibe-card"><div class="vibe-label">Stop Loss</div><div class="vibe-value" id="tv-ai-sl">--</div></div>
+            </div>
+            <div id="tv-ai-invest-section" class="invest-section" style="display:none;">
+              <div class="invest-header">
+                <span>💰 INVESTMENT CALCULATOR</span>
+                <span id="tv-ai-time-horizon"></span>
+              </div>
+              <div class="invest-input-row">
+                <label>Amount $</label>
+                <input type="number" id="tv-ai-invest-amount" value="1000" min="1" step="100">
+              </div>
+              <div class="invest-grid">
+                <div class="vibe-card"><div class="vibe-label">Expected %</div><div class="vibe-value green" id="tv-ai-expected-pct">--%</div></div>
+                <div class="vibe-card"><div class="vibe-label">Profit</div><div class="vibe-value green" id="tv-ai-expected-profit">$--</div></div>
+                <div class="vibe-card"><div class="vibe-label">Risk</div><div class="vibe-value red" id="tv-ai-expected-risk">$--</div></div>
+              </div>
+            </div>
+            <p id="tv-ai-reasoning" class="reasoning">Deploying 29 Agent Teams with 71 Skills…</p>
+            <div id="tv-ai-skills-used" class="skills-used"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OPEN POSITIONS TAB -->
+      <div id="vibe-view-positions" class="vibe-view" style="display:none;">
+        <div class="positions-header">
+          <h2 class="section-title">📊 Open Positions</h2>
+          <div class="positions-actions">
+            <button class="vibe-btn danger-btn" id="close-all-positions-btn">Close All</button>
+          </div>
+        </div>
+        <div class="positions-table-wrap">
+          <table class="positions-table" id="open-positions-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Symbol</th>
+                <th>Side</th>
+                <th>Entry</th>
+                <th>Current</th>
+                <th>Size</th>
+                <th>P&L</th>
+                <th>P&L %</th>
+                <th>TP</th>
+                <th>SL</th>
+                <th>Duration</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="open-positions-body">
+              <tr class="empty-row"><td colspan="12">No open positions</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ACTIVITY LOG TAB -->
+      <div id="vibe-view-activity" class="vibe-view" style="display:none;">
+        <div class="positions-header">
+          <h2 class="section-title">📋 Live Activity Feed</h2>
+          <div class="positions-actions">
+            <select id="activity-filter" class="site-select small-select">
+              <option value="all">All Events</option>
+              <option value="signal">Signals</option>
+              <option value="trade">Trades</option>
+              <option value="auto">Auto-Trade</option>
+              <option value="system">System</option>
+              <option value="error">Errors</option>
+            </select>
+            <button class="vibe-btn small-btn" id="clear-activity-btn">Clear</button>
+          </div>
+        </div>
+        <div class="activity-feed" id="activity-feed">
+          <div class="activity-empty">Waiting for activity...</div>
+        </div>
+      </div>
+
+      <!-- TRADE LOG TABLE TAB -->
+      <div id="vibe-view-tradelog" class="vibe-view" style="display:none;">
+        <div class="positions-header">
+          <h2 class="section-title">📒 Complete Trade Log</h2>
+          <div class="positions-actions">
+            <button class="vibe-btn small-btn" id="export-tradelog-csv">Export CSV</button>
+            <button class="vibe-btn small-btn" id="export-tradelog-json">Export JSON</button>
+          </div>
+        </div>
+        <div class="tradelog-summary" id="tradelog-summary"></div>
+        <div class="positions-table-wrap">
+          <table class="positions-table tradelog-table" id="tradelog-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Opened</th>
+                <th>Closed</th>
+                <th>Symbol</th>
+                <th>Side</th>
+                <th>Entry</th>
+                <th>Exit</th>
+                <th>Size</th>
+                <th>P&L $</th>
+                <th>P&L %</th>
+                <th>Result</th>
+                <th>Duration</th>
+                <th>TP</th>
+                <th>SL</th>
+                <th>Exit Reason</th>
+              </tr>
+            </thead>
+            <tbody id="tradelog-body">
+              <tr class="empty-row"><td colspan="15">No completed trades yet</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SWARM TAB -->
+      <div id="vibe-view-swarm" class="vibe-view" style="display:none;">
+        <h2 class="section-title">📺 TV trade — DAG Multi-Agent Orchestration</h2>
+        <p class="section-desc">6 departments analyze each signal in parallel — consensus drives the trade.</p>
+        <div id="tv-ai-swarm-display" class="swarm-grid"></div>
+      </div>
+
+      <!-- TEAMS TAB -->
+      <div id="vibe-view-teams" class="vibe-view" style="display:none;">
+        <h2 class="section-title">29 Agent Team Presets</h2>
+        <p class="section-desc">Select a swarm preset in the sidebar. Each team deploys specialized skills for its domain.</p>
+        <div id="teams-catalog" class="catalog-grid"></div>
+      </div>
+
+      <!-- SKILLS TAB -->
+      <div id="vibe-view-skills" class="vibe-view" style="display:none;">
+        <h2 class="section-title">71 Specialist Skills</h2>
+        <p class="section-desc">Full skill library across data, strategy, analysis, asset class, crypto, flow, and tools.</p>
+        <div id="skills-catalog" class="skills-catalog"></div>
+      </div>
+
+      <!-- HISTORY TAB -->
+      <div id="vibe-view-history" class="vibe-view" style="display:none;">
+        <h2 class="section-title">Trade History &amp; P&amp;L</h2>
+        <div class="history-top">
+          <div class="vibe-card stat-card"><div class="vibe-label">Overall P&amp;L</div><div class="vibe-value" id="vibe-history-pnl">$--</div></div>
+          <div class="vibe-card stat-card"><div class="vibe-label">Win Rate</div><div class="vibe-value" id="vibe-history-winrate">--%</div></div>
+          <div class="vibe-card stat-card wide">
+            <div class="vibe-label">Equity Curve</div>
+            <canvas id="vibe-history-chart" width="800" height="120"></canvas>
+          </div>
+        </div>
+        <div id="vibe-history-log" class="history-log"></div>
+      </div>
+
+      <!-- BACKTEST TAB -->
+      <div id="vibe-view-backtest" class="vibe-view" style="display:none;">
+        <h2 class="section-title">7 Backtest Engines</h2>
+        <p class="section-desc">Monte Carlo · Bootstrap CI · Walk-Forward · 4 Optimizers</p>
+        <div id="engines-catalog" class="engines-grid"></div>
+        <div class="backtest-stats">
+          <div class="vibe-card"><div class="vibe-label">Win Rate</div><div class="vibe-value" id="vibe-win-rate">--%</div></div>
+          <div class="vibe-card"><div class="vibe-label">Trades</div><div class="vibe-value" id="feedback-count">0</div></div>
+          <div class="vibe-card"><div class="vibe-label">Sharpe</div><div class="vibe-value" id="vibe-sharpe">--</div></div>
+          <div class="vibe-card"><div class="vibe-label">Max DD</div><div class="vibe-value" id="vibe-maxdd">--</div></div>
+        </div>
+        <button class="vibe-btn" id="vibe-run-backtest">RUN DEEP BACKTEST</button>
+      </div>
+
+      <!-- EXPORT TAB -->
+      <div id="vibe-view-export" class="vibe-view" style="display:none;">
+        <h2 class="section-title">Multi-Platform Export</h2>
+        <div class="export-grid">
+          <button class="vibe-btn export-btn" id="vibe-export-pine">📈 TradingView Pine Script v5</button>
+          <button class="vibe-btn export-btn" id="vibe-export-tdx">📊 通达信 TDX Formula</button>
+          <button class="vibe-btn export-btn" id="vibe-export-mt5">🤖 MetaTrader 5 MQL5</button>
+          <button class="vibe-btn export-btn" id="vibe-export-json">📋 JSON Data Export</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    TV trade • <span id="footer-skills">71</span> Skills • <span id="footer-teams">29</span> Teams • <span id="footer-engines">7</span> Backtest Engines • DAG Orchestration • Cross-Session Memory
+  </footer>
+
+  <script src="dashboard-data.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>

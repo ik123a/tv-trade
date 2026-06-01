@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    :root {
+      --vibe-bg: #0d1117;
+      --vibe-accent: #8833ff;
+      --vibe-accent-glow: rgba(136, 51, 255, 0.4);
+      --vibe-green: #00ffa3;
+      --vibe-red: #ff3b3b;
+      --vibe-border: rgba(255, 255, 255, 0.08);
+      --vibe-text: #ffffff;
+      --vibe-text-dim: #8b949e;
+    }
+
+    body {
+      width: 280px;
+      padding: 20px;
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--vibe-bg);
+      color: var(--vibe-text);
+      margin: 0;
+    }
+
+    h2 { 
+      margin: 0 0 20px 0; 
+      font-size: 16px; 
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(to right, #fff, var(--vibe-accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+    }
+
+    .status-box {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 18px;
+      border-radius: 14px;
+      margin-bottom: 20px;
+      border: 1px solid var(--vibe-border);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s;
+    }
+
+    #status-text {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .key-status { 
+      font-size: 11px; 
+      color: var(--vibe-text-dim); 
+      font-family: monospace;
+    }
+
+    .vibe-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--vibe-border);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .vibe-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--vibe-text-dim);
+    }
+
+    /* Modern Switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 22px;
+    }
+
+    .switch input { opacity: 0; width: 0; height: 0; }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #30363d;
+      transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 22px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: #fff;
+      transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    input:checked + .slider { 
+      background-color: var(--vibe-accent);
+      box-shadow: 0 0 15px var(--vibe-accent-glow);
+    }
+    input:checked + .slider:before { transform: translateX(22px); }
+
+    .footer { 
+      margin-top: 20px; 
+      font-size: 10px; 
+      color: var(--vibe-text-dim); 
+      opacity: 0.6;
+      text-align: center;
+    }
+
+    select option, select optgroup {
+      background-color: var(--vibe-bg);
+      color: var(--vibe-text);
+    }
+  </style>
+</head>
+<body>
+  <h2>📺 TV trade</h2>
+  
+  <div class="status-box">
+    <div id="status-text">Initializing Swarm...</div>
+    <div class="key-status" id="key-info">OPENROUTER_API_KEY.txt</div>
+    <button id="open-dashboard-btn" style="margin-top:12px;width:100%;padding:10px;border:none;border-radius:10px;background:var(--vibe-accent);color:white;font-weight:700;font-size:12px;cursor:pointer;">
+      📊 Open Dashboard
+    </button>
+  </div>
+
+  <div class="vibe-card" style="margin-bottom: 12px; flex-direction: column; align-items: flex-start; gap: 8px;">
+    <span class="vibe-label">AI ENGINE</span>
+    <select id="model-select" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--vibe-border); color: white; border-radius: 8px; padding: 6px; font-size: 11px; outline: none; cursor: pointer;">
+      <option value="moonshotai/kimi-k2.6:free">🌙 Kimi K2.6 Free (Primary)</option>
+      <option value="auto">⚡ Auto (all 6 models fallback)</option>
+      <option value="deepseek/deepseek-v4-flash">🚀 DeepSeek V4 Flash</option>
+      <option value="qwen/qwen3-coder:free">🧠 Qwen3 Coder Free</option>
+      <option value="nvidia/nemotron-3-super-120b-a12b:free">🦾 Nemotron 3 Super 120B Free</option>
+      <option value="minimax/minimax-m2.5:free">✨ MiniMax M2.5 Free</option>
+      <option value="z-ai/glm-4.5-air:free">💨 GLM 4.5 Air Free</option>
+    </select>
+  </div>
+
+  <div class="vibe-card" style="margin-bottom: 12px; flex-direction: column; align-items: flex-start; gap: 8px;">
+    <span class="vibe-label">SWARM TEAM PRESET (29 Teams)</span>
+    <select id="preset-select" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--vibe-border); color: white; border-radius: 8px; padding: 6px; font-size: 10px; outline: none; cursor: pointer;">
+      <optgroup label="── CORE ──">
+        <option value="technical_analysis_panel">📈 Technical Analysis Panel</option>
+        <option value="investment_committee">🏢 Investment Committee</option>
+        <option value="quant_strategy_desk">🧮 Quant Strategy Desk</option>
+        <option value="risk_committee">🛡️ Risk Committee</option>
+      </optgroup>
+      <optgroup label="── GLOBAL ──">
+        <option value="global_equities_desk">🌐 Global Equities Desk</option>
+        <option value="global_allocation_committee">🌍 Global Allocation Committee</option>
+        <option value="macro_rates_fx_desk">💱 Macro Rates & FX Desk</option>
+        <option value="earnings_research_desk">📊 Earnings Research Desk</option>
+      </optgroup>
+      <optgroup label="── CRYPTO ──">
+        <option value="crypto_trading_desk">₿ Crypto Trading Desk</option>
+        <option value="defi_yield_desk">🌾 DeFi Yield Desk</option>
+        <option value="onchain_intelligence">🔗 On-Chain Intelligence</option>
+        <option value="perp_basis_desk">📐 Perp/Basis Trading</option>
+      </optgroup>
+      <optgroup label="── FLOW & SENTIMENT ──">
+        <option value="flow_intelligence_desk">🔍 Flow Intelligence Desk</option>
+        <option value="dark_pool_desk">🕵️ Dark Pool Analysis</option>
+        <option value="sentiment_radar">📡 Sentiment Radar</option>
+        <option value="news_event_desk">📰 News & Event Desk</option>
+      </optgroup>
+      <optgroup label="── STRATEGY ──">
+        <option value="smc_ict_desk">💎 SMC/ICT Strategy Desk</option>
+        <option value="elliott_wave_desk">🌊 Elliott Wave Desk</option>
+        <option value="ichimoku_desk">☁️ Ichimoku Cloud Desk</option>
+        <option value="harmonic_desk">🎯 Harmonic Patterns Desk</option>
+        <option value="momentum_desk">🚀 Momentum Strategy</option>
+        <option value="mean_reversion_desk">🔄 Mean Reversion Desk</option>
+        <option value="breakout_desk">💥 Breakout Detection</option>
+      </optgroup>
+      <optgroup label="── ASSET CLASS ──">
+        <option value="options_strategy_desk">🎛️ Options Strategy Desk</option>
+        <option value="fixed_income_desk">🏦 Fixed Income Desk</option>
+        <option value="commodity_desk">🛢️ Commodity Desk</option>
+        <option value="etf_rotation_desk">📦 ETF Rotation Desk</option>
+        <option value="sector_rotation_desk">🔄 Sector Rotation</option>
+      </optgroup>
+      <optgroup label="── SPECIALIST ──">
+        <option value="pairs_trading_desk">⚖️ Pairs Trading Desk</option>
+      </optgroup>
+    </select>
+  </div>
+  
+  <div class="vibe-card">
+    <span class="vibe-label">AI SWARM AGENTS</span>
+    <label class="switch">
+      <input type="checkbox" id="ai-toggle" checked>
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="vibe-card" style="margin-top: 12px; flex-direction: column; align-items: flex-start; gap: 8px;">
+    <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+      <span class="vibe-label">FULL AUTO TRADING</span>
+      <label class="switch">
+        <input type="checkbox" id="auto-trade-toggle">
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div style="width:100%;">
+      <span class="vibe-label" style="font-size:10px;">Min confidence: <span id="confidence-val">65</span>%</span>
+      <input type="range" id="min-confidence" min="50" max="90" value="65" style="width:100%; margin-top:6px; accent-color: var(--vibe-accent);">
+    </div>
+    <div style="font-size:9px; color:var(--vibe-text-dim); line-height:1.4;">
+      Places orders on TradingView when signal ≥ threshold. One open position per symbol.
+    </div>
+  </div>
+
+  <div style="padding:8px 15px; background:rgba(0,209,255,0.03); border-radius:8px; margin-top:8px;">
+    <div style="font-size:9px; color:var(--vibe-text-dim); opacity:0.7; line-height:1.4;">
+      <span style="color:var(--vibe-accent);">71</span> Skills • <span style="color:var(--vibe-accent);">29</span> Teams • <span style="color:var(--vibe-accent);">7</span> Backtest Engines<br>
+      DAG Orchestration • Cross-Session Memory
+    </div>
+  </div>
+
+  <div class="footer">
+    TV trade Full Swarm Engine<br>
+    29 Teams · 71 Skills · Multi-Model AI
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
+

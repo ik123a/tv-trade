@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "TV trade",
+  "version": "3.0",
+  "description": "TV trade: 29 Agent Teams · 71 Skills · Multi-Model AI Swarm for TradingView",
+  "permissions": ["storage", "activeTab", "scripting"],
+  "host_permissions": [
+    "https://*.tradingview.com/*",
+    "https://openrouter.ai/*",
+    "https://query1.finance.yahoo.com/*",
+    "https://integrate.api.nvidia.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.tradingview.com/chart/*", "https://*.tradingview.com/chart/*"],
+      "js": ["content.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["icon.png", "OPENROUTER_API_KEY.txt", "NVIDIA_API_KEY.txt"],
+      "matches": ["https://www.tradingview.com/*"]
+    }
+  ]
+}
