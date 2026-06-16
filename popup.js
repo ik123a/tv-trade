@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
       defaultModel = 'moonshotai/kimi-k2.6:free';
     }
 
-    modelSelect.innerHTML = models.map(m => `<option value="${m.v}">${m.l}</option>`).join('');
+    setHTML(modelSelect, models.map(m => `<option value="${m.v}">${m.l}</option>`).join(''));
 
     const savedModel = result.selectedModel || defaultModel;
     const hasModelOption = Array.from(modelSelect.options).some(o => o.value === savedModel);

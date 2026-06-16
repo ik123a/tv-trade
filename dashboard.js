@@ -11,6 +11,17 @@ let tradeSettings = { tradeMode: 'both', positionSize: 1000, maxOpenPositions: 3
 
 function $(id) { return document.getElementById(id); }
 
+function setHTML(element, htmlString) {
+  if (!element) return;
+  element.textContent = '';
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(htmlString, 'text/html');
+  while (doc.body.firstChild) {
+    element.appendChild(doc.body.firstChild);
+  }
+}
+
+
 function downloadFile(content, filename) {
   const blob = new Blob([content], { type: 'text/plain' });
   const url = URL.createObjectURL(blob);
@@ -111,9 +122,7 @@ function updateDashboard(prediction, price) {
 
   if (skillsUsedEl) {
     const skills = prediction.skillsUsed || [];
-    skillsUsedEl.innerHTML = skills.map(s =>
-      `<span class="skill-tag" style="background:rgba(136,51,255,0.1);border-color:rgba(136,51,255,0.3);color:var(--vibe-accent);font-size:10px;">${s}</span>`
-    ).join('');
+    setHTML(skillsUsedEl, skills.map(s => `<span class="skill-tag" style="background:rgba(136,51,255,0.1);border-color:rgba(136,51,255,0.3);color:var(--vibe-accent);font-size:10px;">${s}</span>`).join(''));
   }
 }
 
@@ -185,11 +194,11 @@ function renderOpenPositions() {
 
   const openOnly = openTrades.filter(t => t.status === 'OPEN');
   if (openOnly.length === 0) {
-    body.innerHTML = '<tr class="empty-row"><td colspan="12">No open positions — enable auto-trade to start</td></tr>';
+    setHTML(body, '<tr class="empty-row"><td colspan="12">No open positions — enable auto-trade to start</td></tr>');
     return;
   }
 
-  body.innerHTML = openOnly.map(t => {
+  setHTML(body, openOnly.map(t => {
     const pnl = t.livePnL || 0;
     const pnlPct = t.livePnLPct || 0;
     const pnlClass = pnl >= 0 ? 'pnl-positive' : 'pnl-negative';
@@ -208,7 +217,7 @@ function renderOpenPositions() {
       <td>${t.duration || '—'}</td>
       <td><button class="close-trade-btn" data-trade-id="${t.id}">Close</button></td>
     </tr>`;
-  }).join('');
+  }).join(''))
 
   body.querySelectorAll('.close-trade-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -253,18 +262,18 @@ function renderActivityFeed(filter = 'all') {
   }
 
   if (filtered.length === 0) {
-    feed.innerHTML = '<div class="activity-empty">No activity matching this filter</div>';
+    setHTML(feed, '<div class="activity-empty">No activity matching this filter</div>');
     return;
   }
 
-  feed.innerHTML = filtered.slice(0, 100).map(entry => {
+  setHTML(feed, filtered.slice(0, 100).map(entry => {
     const cat = getActivityCategory(entry.type);
     return `<div class="activity-entry type-${cat}">
       <span class="activity-time">${entry.timestamp}</span>
       <span class="activity-badge">${entry.type.replace(/_/g, ' ')}</span>
       <span class="activity-msg">${entry.message}</span>
     </div>`;
-  }).join('');
+  }).join(''))
 }
 
 function addActivityEntry(entry) {
@@ -287,8 +296,8 @@ function renderTradeLog() {
   if (!body) return;
 
   if (feedbackData.length === 0) {
-    body.innerHTML = '<tr class="empty-row"><td colspan="15">No completed trades yet — trades appear here when TP/SL is hit or positions are closed</td></tr>';
-    if (summary) summary.innerHTML = '';
+    setHTML(body, '<tr class="empty-row"><td colspan="15">No completed trades yet — trades appear here when TP/SL is hit or positions are closed</td></tr>');
+    if (summary) setHTML(summary, '');
     return;
   }
 
@@ -309,7 +318,7 @@ function renderTradeLog() {
   const pnlClass = (v) => v >= 0 ? 'pnl-positive' : 'pnl-negative';
 
   if (summary) {
-    summary.innerHTML = `
+    setHTML(summary, `
       <div class="tradelog-stat"><div class="tradelog-stat-label">Total Trades</div><div class="tradelog-stat-value">${totalTrades}</div></div>
       <div class="tradelog-stat"><div class="tradelog-stat-label">Win Rate</div><div class="tradelog-stat-value ${pnlClass(wins)}">${winRate}%</div></div>
       <div class="tradelog-stat"><div class="tradelog-stat-label">Total P&L</div><div class="tradelog-stat-value ${pnlClass(totalPnL)}">${totalPnL >= 0 ? '+' : ''}$${totalPnL.toFixed(2)}</div></div>
@@ -318,10 +327,10 @@ function renderTradeLog() {
       <div class="tradelog-stat"><div class="tradelog-stat-label">Biggest Loss</div><div class="tradelog-stat-value pnl-negative">-$${Math.abs(biggestLoss).toFixed(2)}</div></div>
       <div class="tradelog-stat"><div class="tradelog-stat-label">Avg Duration</div><div class="tradelog-stat-value">${avgDuration}</div></div>
       <div class="tradelog-stat"><div class="tradelog-stat-label">W / L</div><div class="tradelog-stat-value">${wins} / ${losses}</div></div>
-    `;
+    `)
   }
 
-  body.innerHTML = feedbackData.map((t, i) => {
+  setHTML(body, feedbackData.map((t, i) => {
     const pnl = t.pnl || 0;
     const entry = parseFloat(t.entry) || 0;
     const exit = t.closePrice || '—';
@@ -351,7 +360,7 @@ function renderTradeLog() {
       <td>${t.sl || '—'}</td>
       <td>${exitReason}</td>
     </tr>`;
-  }).join('');
+  }).join(''))
 }
 
 function formatDuration(ms) {
@@ -447,9 +456,9 @@ function renderHistoryTab() {
   const baseAmount = parseFloat($('tv-ai-invest-amount')?.value) || 1000;
   let cumulativePnl = 0, wins = 0;
   const pnlHistory = [0];
-  logEl.innerHTML = '';
+  setHTML(logEl, '');
   if (feedbackData.length === 0 && openTrades.length === 0) {
-    logEl.innerHTML = '<div style="text-align:center;padding:12px;color:var(--vibe-text-dim);font-size:11px;">No trades yet</div>';
+    setHTML(logEl, '<div style="text-align:center);padding:12px;color:var(--vibe-text-dim);font-size:11px;">No trades yet</div>';
     if (pnlEl) pnlEl.innerText = '$0.00';
     if (winrateEl) winrateEl.innerText = '0%';
     drawEquityCurve(canvas, pnlHistory);
@@ -484,7 +493,7 @@ function renderHistoryTab() {
   [...openTrades].reverse().forEach(trade => {
     const row = document.createElement('div');
     row.style.cssText = 'background:rgba(0,209,255,0.05);border-left:2px solid var(--vibe-blue);padding:8px;border-radius:6px;margin-bottom:6px;font-size:11px;display:flex;justify-content:space-between;';
-    row.innerHTML = `<span><b>${trade.type}</b> ${trade.symbol}</span><span style="color:var(--vibe-blue)">OPEN</span>`;
+    setHTML(row, `<span><b>${trade.type}</b> ${trade.symbol}</span><span style="color:var(--vibe-blue)">OPEN</span>`);
     logEl.appendChild(row);
   });
 
@@ -493,7 +502,7 @@ function renderHistoryTab() {
     const row = document.createElement('div');
     row.style.cssText = `background:rgba(255,255,255,0.03);border-left:2px solid ${isWin ? 'var(--vibe-green)' : 'var(--vibe-red)'};padding:8px;border-radius:6px;margin-bottom:6px;font-size:11px;display:flex;justify-content:space-between;`;
     const pnlText = trade.pnl !== undefined ? ` ($${trade.pnl >= 0 ? '+' : ''}${trade.pnl.toFixed(2)})` : '';
-    row.innerHTML = `<span>${trade.type} ${trade.symbol || ''}${pnlText}</span><span style="color:${isWin ? 'var(--vibe-green)' : 'var(--vibe-red)'}">${isWin ? 'WIN' : 'LOSS'}</span>`;
+    setHTML(row, `<span>${trade.type} ${trade.symbol || ''}${pnlText}</span><span style="color:${isWin ? 'var(--vibe-green)' : 'var(--vibe-red)'}">${isWin ? 'WIN' : 'LOSS'}</span>`);
     logEl.appendChild(row);
   });
 }
@@ -571,18 +580,18 @@ function renderCatalogs() {
 
   const skillsEl = $('skills-catalog');
   if (skillsEl) {
-    skillsEl.innerHTML = VIBE_CATALOG.skills.map(group => `
+    setHTML(skillsEl, VIBE_CATALOG.skills.map(group => `
       <div class="skill-group">
         <div class="skill-group-header" style="color:${group.color}">${group.icon} ${group.cat} (${group.items.length})</div>
         <div class="skill-tags">${group.items.map(s =>
           `<span class="skill-tag" style="background:${group.color}15;border-color:${group.color}40;color:${group.color}">${s}</span>`
         ).join('')}</div>
-      </div>`).join('');
+      </div>`).join(''));
   }
 
   const teamsEl = $('teams-catalog');
   if (teamsEl) {
-    teamsEl.innerHTML = VIBE_CATALOG.teams.map(group => `
+    setHTML(teamsEl, VIBE_CATALOG.teams.map(group => `
       <div class="catalog-group">
         <div class="catalog-group-title">${group.cat} (${group.items.length})</div>
         <div class="catalog-grid">${group.items.map(t => `
@@ -590,7 +599,7 @@ function renderCatalogs() {
             <div class="team-card-head"><span>${t.icon}</span><span>${t.name}</span></div>
             <div class="team-card-id">${t.id}</div>
           </div>`).join('')}</div>
-      </div>`).join('');
+      </div>`).join(''));
     teamsEl.querySelectorAll('.team-card').forEach(card => {
       card.addEventListener('click', () => {
         const preset = card.dataset.preset;
@@ -608,19 +617,19 @@ function renderCatalogs() {
     ? `<div class="engine-mini-item"><span>${e.icon}</span><span>${e.name}</span></div>`
     : `<div class="engine-card"><div class="engine-card-icon">${e.icon}</div><div class="engine-card-name">${e.name}</div><div class="engine-card-desc">${e.desc}</div></div>`
   ).join('');
-  if (enginesEl) enginesEl.innerHTML = engineHtml(false);
-  if (sidebarEngines) sidebarEngines.innerHTML = `<h3>7 Backtest Engines</h3>${engineHtml(true)}`;
+  if (enginesEl) setHTML(enginesEl, engineHtml(false));
+  if (sidebarEngines) setHTML(sidebarEngines, `<h3>7 Backtest Engines</h3>${engineHtml(true)}`);
 }
 
 function initSettings() {
   const modelSelect = $('model-select');
   const presetSelect = $('preset-select');
   if (!modelSelect || !presetSelect) return;
-  presetSelect.innerHTML = VIBE_CATALOG.teams.map(g =>
+  setHTML(presetSelect, VIBE_CATALOG.teams.map(g =>
     `<optgroup label="${g.cat}">${g.items.map(t =>
       `<option value="${t.id}">${t.icon} ${t.name}</option>`
     ).join('')}</optgroup>`
-  ).join('');
+  ).join(''));
 
   chrome.storage.local.get(['selectedModel', 'selectedPreset', 'autoTradeEnabled', 'minAutoConfidence', 'apiKey'], (data) => {
     const isNvidia = data.apiKey && data.apiKey.startsWith('nvapi-');
@@ -651,7 +660,7 @@ function initSettings() {
       ];
       defaultModel = 'moonshotai/kimi-k2.6:free';
     }
-    modelSelect.innerHTML = models.map(m => `<option value="${m.v}">${m.l}</option>`).join('');
+    setHTML(modelSelect, models.map(m => `<option value="${m.v}">${m.l}</option>`).join(''));
     modelSelect.value = data.selectedModel || defaultModel;
     if (!modelSelect.value) { modelSelect.value = defaultModel; chrome.storage.local.set({ selectedModel: defaultModel }); }
     presetSelect.value = data.selectedPreset || 'technical_analysis_panel';
