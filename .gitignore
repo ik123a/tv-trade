@@ -20,3 +20,34 @@ desktop.ini
 # Temporary files
 *.tmp
 *.bak
+
+# Auto-added safety ignores for large files and temp data
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+.next/
+dist/
+build/
+.gradle/
+local.properties
+*.iml
+.idea/libraries/
+.idea/caches/
+*.h5
+*.pt
+*.bin
+*.gguf
+*.zst
+*.tar.gz
+*.iso
+*.vmdk
+*.dll
+*.exe
+*.zip
+*.7z
+*.rar
+.pytest_cache/
+.turbo/
