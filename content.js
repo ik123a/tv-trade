@@ -192,9 +192,13 @@ function hasOpenTradeForSymbol() {
 function shouldAutoExecute(prediction) {
   if (!isAutoTradeEnabled || !prediction) return { execute: false, reason: 'Auto-trade disabled' };
   if (prediction.signal === 'HOLD') return { execute: false, reason: 'Signal is HOLD' };
-  if (!prediction.tp || !prediction.sl) return { execute: false, reason: 'Missing TP/SL levels' };
+  if (!['BUY', 'SELL'].includes(prediction.signal)) return { execute: false, reason: 'Invalid signal' };
+  if (![prediction.tp, prediction.sl].every(value => Number.isFinite(value) && value > 0)) {
+    return { execute: false, reason: 'Invalid TP/SL levels' };
+  }
 
-  const prob = prediction.probability || 0;
+  const prob = prediction.probability;
+  if (!Number.isFinite(prob) || prob < 0 || prob > 100) return { execute: false, reason: 'Invalid confidence' };
   if (prob < minAutoConfidence) return { execute: false, reason: `Confidence ${prob}% < threshold ${minAutoConfidence}%` };
   if (openTrades.filter(t => t.status === 'OPEN').length >= tradeSettings.maxOpenPositions) {
     return { execute: false, reason: `Max open positions (${tradeSettings.maxOpenPositions}) reached` };

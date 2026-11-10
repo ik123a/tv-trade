@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       if (!keyFound) {
         statusText.innerText = '❌ Key Not Found';
-        statusText.style.color = '#ff3b3b';
+        statusText.style.color = '#ff9b9b';
         keyInfo.innerText = 'Paste key in OPENROUTER_API_KEY.txt or NVIDIA_API_KEY.txt';
       }
     }
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
       defaultModel = 'moonshotai/kimi-k2.6:free';
     }
 
-    setHTML(modelSelect, models.map(m => `<option value="${m.v}">${m.l}</option>`).join(''));
+    modelSelect.replaceChildren(...models.map(model => new Option(model.l, model.v)));
 
     const savedModel = result.selectedModel || defaultModel;
     const hasModelOption = Array.from(modelSelect.options).some(o => o.value === savedModel);

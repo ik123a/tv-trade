@@ -458,7 +458,7 @@ function renderHistoryTab() {
   const pnlHistory = [0];
   setHTML(logEl, '');
   if (feedbackData.length === 0 && openTrades.length === 0) {
-    setHTML(logEl, '<div style="text-align:center);padding:12px;color:var(--vibe-text-dim);font-size:11px;">No trades yet</div>';
+    setHTML(logEl, '<div style="text-align:center;padding:12px;color:var(--vibe-text-dim);font-size:11px;">No trades yet</div>');
     if (pnlEl) pnlEl.innerText = '$0.00';
     if (winrateEl) winrateEl.innerText = '0%';
     drawEquityCurve(canvas, pnlHistory);
