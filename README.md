@@ -1,5 +1,41 @@
 # 📺 TV Trade — AI-Powered TradingView Auto-Trading Extension
 
+## Verified scope — 10 November 2026
+
+The source is a Manifest V3 extension with a TradingView content script,
+background provider router and dashboard. The advertised teams and skills are
+prompt/catalog entries; they do not by themselves demonstrate separate executing
+agents or verified market data integrations. The internal simulated positions
+are local bookkeeping, not broker-confirmed fills or audited performance.
+
+The auto-execution gate now accepts only exact BUY/SELL signals, positive finite
+numeric TP/SL values and finite numeric confidence in [0, 100], in addition to
+existing enablement, confidence, duplicate and position limits. Previously an
+UNKNOWN signal or NaN confidence could pass the gate. The dashboard's existing
+missing-parenthesis parse error was also repaired.
+
+```sh
+node --test tests/auto-gate.test.js
+node --check content.js
+node --check dashboard.js
+node --check background.js
+```
+
+Three offline gate tests pass. They extract only the pure gate into a VM and
+never boot the content script, call a provider or place an order. Valid BUY/SELL,
+malformed predictions and existing blocking conditions are covered. Directional
+TP/SL sanity, authenticated order confirmation, persistence/reconciliation and
+DOM selector compatibility remain unverified. Hybrid mode can create simulated
+bookkeeping when DOM execution is uncertain; that is not evidence of fill state.
+
+![Source review flow diagram, not a runtime screenshot](docs/review-flow.svg)
+
+No TradingView account, broker, trade, market replay, provider API or performance
+benchmark was exercised. The diagram is source-derived; no new UI screenshot is
+claimed. For further review, use owned offline fixtures with the execution layer
+stubbed before testing any broker-connected interface.
+
+
 A Chrome extension that brings **fully automated AI trading** to TradingView. It scrapes live chart data, sends it to AI models for analysis, and executes trades directly on TradingView's interface — all with real-time logging, position management, and comprehensive trade history.
 
 ![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-blue?logo=googlechrome)
