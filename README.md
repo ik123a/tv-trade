@@ -28,11 +28,20 @@ TP/SL sanity, authenticated order confirmation, persistence/reconciliation and
 DOM selector compatibility remain unverified. Hybrid mode can create simulated
 bookkeeping when DOM execution is uncertain; that is not evidence of fill state.
 
+### Local popup check
+
+![No API key configured popup layout](docs/ui-no-key.png)
+
+This is the actual local popup HTML rendered in an isolated Edge page at its
+natural 320px width. Chrome storage/tab APIs and network requests were stubbed.
+It is a layout check, not an installed-extension or live-service capture.
+Named 44px toggle targets, visible keyboard focus and Space-key toggling passed;
+no page error or horizontal overflow was observed. The model selector now uses native Option nodes, fixing an initialization ReferenceError.
+
 ![Source review flow diagram, not a runtime screenshot](docs/review-flow.svg)
 
 No TradingView account, broker, trade, market replay, provider API or performance
-benchmark was exercised. The diagram is source-derived; no new UI screenshot is
-claimed. For further review, use owned offline fixtures with the execution layer
+benchmark was exercised. The diagram is source-derived; the popup capture above verifies only offline layout. For further review, use owned offline fixtures with the execution layer
 stubbed before testing any broker-connected interface.
 
 

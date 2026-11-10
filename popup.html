@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TV trade settings</title>
   <style>
     :root {
       --vibe-bg: #0d1117;
@@ -51,7 +53,7 @@
     }
 
     .key-status { 
-      font-size: 11px; 
+      font-size: 12px;
       color: var(--vibe-text-dim); 
       font-family: monospace;
     }
@@ -112,9 +114,9 @@
 
     .footer { 
       margin-top: 20px; 
-      font-size: 10px; 
+      font-size: 12px;
       color: var(--vibe-text-dim); 
-      opacity: 0.6;
+      opacity: 1;
       text-align: center;
     }
 
@@ -122,13 +124,26 @@
       background-color: var(--vibe-bg);
       color: var(--vibe-text);
     }
+
+    /* Keep the compact popup identity with readable text and keyboard controls. */
+    .switch { flex: 0 0 44px; width: 44px; height: 44px; }
+    .switch input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; z-index: 1; cursor: pointer; }
+    .slider { top: 11px; bottom: 11px; pointer-events: none; }
+    input:focus-visible + .slider { outline: 2px solid #e2e8f0; outline-offset: 4px; }
+    select:focus-visible, button:focus-visible, input[type="range"]:focus-visible { outline: 2px solid #e2e8f0; outline-offset: 3px; }
+    select, button { min-height: 44px; }
+    .header > div, .status-row > div { min-width: 0; }
+    .instructions, .key-status { overflow-wrap: anywhere; }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { width: 320px; max-width: 100vw; }
   </style>
 </head>
 <body>
   <h2>📺 TV trade</h2>
   
   <div class="status-box">
-    <div id="status-text">Initializing Swarm...</div>
+    <div id="status-text" role="status" aria-live="polite">Checking API key…</div>
     <div class="key-status" id="key-info">OPENROUTER_API_KEY.txt</div>
     <button id="open-dashboard-btn" style="margin-top:12px;width:100%;padding:10px;border:none;border-radius:10px;background:var(--vibe-accent);color:white;font-weight:700;font-size:12px;cursor:pointer;">
       📊 Open Dashboard
@@ -136,8 +151,8 @@
   </div>
 
   <div class="vibe-card" style="margin-bottom: 12px; flex-direction: column; align-items: flex-start; gap: 8px;">
-    <span class="vibe-label">AI ENGINE</span>
-    <select id="model-select" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--vibe-border); color: white; border-radius: 8px; padding: 6px; font-size: 11px; outline: none; cursor: pointer;">
+    <span class="vibe-label">ANALYSIS MODEL</span>
+    <select id="model-select" aria-label="AI model" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--vibe-border); color: white; border-radius: 8px; padding: 6px; font-size: 12px;  cursor: pointer;">
       <option value="moonshotai/kimi-k2.6:free">🌙 Kimi K2.6 Free (Primary)</option>
       <option value="auto">⚡ Auto (all 6 models fallback)</option>
       <option value="deepseek/deepseek-v4-flash">🚀 DeepSeek V4 Flash</option>
@@ -149,8 +164,8 @@
   </div>
 
   <div class="vibe-card" style="margin-bottom: 12px; flex-direction: column; align-items: flex-start; gap: 8px;">
-    <span class="vibe-label">SWARM TEAM PRESET (29 Teams)</span>
-    <select id="preset-select" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--vibe-border); color: white; border-radius: 8px; padding: 6px; font-size: 10px; outline: none; cursor: pointer;">
+    <span class="vibe-label">ANALYSIS PRESET</span>
+    <select id="preset-select" aria-label="Analysis preset" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--vibe-border); color: white; border-radius: 8px; padding: 6px; font-size: 12px;  cursor: pointer;">
       <optgroup label="── CORE ──">
         <option value="technical_analysis_panel">📈 Technical Analysis Panel</option>
         <option value="investment_committee">🏢 Investment Committee</option>
@@ -198,41 +213,31 @@
   </div>
   
   <div class="vibe-card">
-    <span class="vibe-label">AI SWARM AGENTS</span>
+    <span class="vibe-label">AI SIGNALS</span>
     <label class="switch">
-      <input type="checkbox" id="ai-toggle" checked>
+      <input type="checkbox" id="ai-toggle" aria-label="Enable AI engine" checked>
       <span class="slider"></span>
     </label>
   </div>
 
   <div class="vibe-card" style="margin-top: 12px; flex-direction: column; align-items: flex-start; gap: 8px;">
     <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-      <span class="vibe-label">FULL AUTO TRADING</span>
+      <span class="vibe-label">AUTO TRADING</span>
       <label class="switch">
-        <input type="checkbox" id="auto-trade-toggle">
+        <input type="checkbox" id="auto-trade-toggle" aria-label="Enable automatic trading">
         <span class="slider"></span>
       </label>
     </div>
     <div style="width:100%;">
-      <span class="vibe-label" style="font-size:10px;">Min confidence: <span id="confidence-val">65</span>%</span>
-      <input type="range" id="min-confidence" min="50" max="90" value="65" style="width:100%; margin-top:6px; accent-color: var(--vibe-accent);">
+      <span class="vibe-label" style="font-size:12px;">Min confidence: <span id="confidence-val">65</span>%</span>
+      <input type="range" id="min-confidence" aria-label="Minimum confidence" min="50" max="90" value="65" style="width:100%; margin-top:6px; accent-color: var(--vibe-accent);">
     </div>
-    <div style="font-size:9px; color:var(--vibe-text-dim); line-height:1.4;">
+    <div style="font-size:12px; color:var(--vibe-text-dim); line-height:1.4;">
       Places orders on TradingView when signal ≥ threshold. One open position per symbol.
     </div>
   </div>
 
-  <div style="padding:8px 15px; background:rgba(0,209,255,0.03); border-radius:8px; margin-top:8px;">
-    <div style="font-size:9px; color:var(--vibe-text-dim); opacity:0.7; line-height:1.4;">
-      <span style="color:var(--vibe-accent);">71</span> Skills • <span style="color:var(--vibe-accent);">29</span> Teams • <span style="color:var(--vibe-accent);">7</span> Backtest Engines<br>
-      DAG Orchestration • Cross-Session Memory
-    </div>
-  </div>
-
-  <div class="footer">
-    TV trade Full Swarm Engine<br>
-    29 Teams · 71 Skills · Multi-Model AI
-  </div>
+  <div class="footer">TV trade · Extension settings</div>
   <script src="popup.js"></script>
 </body>
 </html>
